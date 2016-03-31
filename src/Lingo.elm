@@ -4,6 +4,7 @@ import Effects exposing (Effects)
 import Html exposing (Html)
 import Html.Attributes as Attributes
 import Language
+import Languages
 import Routing
 
 
@@ -12,14 +13,14 @@ import Routing
 
 type alias Model =
   { location : Routing.Model
-  , languages : Language.Model
+  , languages : Languages.Model
   }
 
 
 init : Model
 init =
   { location = Just Routing.Languages
-  , languages = Language.init
+  , languages = Languages.init
   }
 
 
@@ -29,7 +30,8 @@ init =
 
 type Action
   = RoutingAction Routing.Action
-  | LanguageAction Language.Action
+  | LanguagesAction Languages.Action
+  | LanguageAction String Language.Action
 
 
 
@@ -46,12 +48,27 @@ update action model =
       in
         ( { model | location = location }, Effects.map RoutingAction fx )
 
-    LanguageAction action ->
+    LanguagesAction action ->
       let
         ( languages, fx ) =
-          Language.update action model.languages
+          Languages.update action model.languages
       in
-        ( { model | languages = languages }, Effects.map LanguageAction fx )
+        ( { model | languages = languages }, Effects.map LanguagesAction fx )
+
+    LanguageAction name action ->
+      case Languages.byName model.languages name of
+        Nothing ->
+          ( model, Effects.none )
+
+        Just target ->
+          let
+            ( language, fx ) =
+              Language.update action target
+
+            languages =
+              Languages.updateIn model.languages language
+          in
+            ( { model | languages = languages }, Effects.map (LanguageAction name) fx )
 
 
 
@@ -71,13 +88,24 @@ navItem location =
 view : Signal.Address Action -> Model -> Html
 view address model =
   let
+    notFound =
+      Html.p [] [ Html.text "Not Found" ]
+
     content =
       case model.location of
         Nothing ->
-          Html.p [] [ Html.text "Not Found" ]
+          notFound
 
         Just (Routing.Languages) ->
-          Language.view (Signal.forwardTo address LanguageAction) model.languages
+          Languages.view (Signal.forwardTo address LanguagesAction) model.languages
+
+        Just (Routing.Language name) ->
+          case Languages.byName model.languages name of
+            Nothing ->
+              notFound
+
+            Just language ->
+              Language.view (Signal.forwardTo address (LanguageAction language.name)) language
   in
     Html.div
       []

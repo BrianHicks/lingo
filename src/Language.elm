@@ -1,23 +1,15 @@
 module Language (..) where
 
-import Html exposing (Html)
 import Effects exposing (Effects)
+import Html exposing (Html)
+import Signal
 
 
 -- MODEL
 
 
-type alias Language =
-  { name : String }
-
-
 type alias Model =
-  List Language
-
-
-init : Model
-init =
-  [ { name = "Spanish" } ]
+  { name : String }
 
 
 
@@ -25,7 +17,7 @@ init =
 
 
 type Action
-  = AddLanguage String
+  = TODO
 
 
 
@@ -34,20 +26,13 @@ type Action
 
 update : Action -> Model -> ( Model, Effects Action )
 update action model =
-  case action of
-    AddLanguage name ->
-      ( { name = name } :: model, Effects.none )
+  ( model, Effects.none )
 
 
 
 -- VIEW
 
 
-languageView : Signal.Address Action -> Language -> Html
-languageView address model =
-  Html.li [] [ Html.text model.name ]
-
-
 view : Signal.Address Action -> Model -> Html
 view address model =
-  Html.ul [] (List.map (languageView address) model)
+  Html.text model.name

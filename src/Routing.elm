@@ -9,6 +9,7 @@ import String
 
 type Location
   = Languages
+  | Language String
 
 
 type alias Model =
@@ -45,6 +46,9 @@ toPath location =
       case location of
         Languages ->
           "/languages"
+
+        Language name ->
+          "/languages/" ++ name
   in
     "#" ++ path
 
@@ -61,10 +65,18 @@ toLocation path =
       [ "languages" ] ->
         Just Languages
 
+      [ "languages", name ] ->
+        Just (Language name)
+
       _ ->
         Nothing
 
 
 toName : Location -> String
 toName location =
-  toString location
+  case location of
+    Language name ->
+      name
+
+    _ ->
+      toString location

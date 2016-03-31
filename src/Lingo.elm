@@ -1,20 +1,26 @@
 module Lingo (..) where
 
-import Html exposing (Html)
 import Effects exposing (Effects)
+import Html exposing (Html)
+import Html.Attributes as Attributes
 import Language
+import Routing
 
 
 -- MODEL
 
 
 type alias Model =
-  { languages : Language.Model }
+  { location : Routing.Model
+  , languages : Language.Model
+  }
 
 
 init : Model
 init =
-  { languages = Language.init }
+  { location = Just Routing.Languages
+  , languages = Language.init
+  }
 
 
 
@@ -22,7 +28,8 @@ init =
 
 
 type Action
-  = LanguageAction Language.Action
+  = RoutingAction Routing.Action
+  | LanguageAction Language.Action
 
 
 
@@ -32,6 +39,13 @@ type Action
 update : Action -> Model -> ( Model, Effects Action )
 update action model =
   case action of
+    RoutingAction action ->
+      let
+        ( location, fx ) =
+          Routing.update action model.location
+      in
+        ( { model | location = location }, Effects.map RoutingAction fx )
+
     LanguageAction action ->
       let
         ( languages, fx ) =
@@ -44,6 +58,40 @@ update action model =
 -- VIEW
 
 
+navItem : Routing.Location -> Html
+navItem location =
+  Html.li
+    []
+    [ Html.a
+        [ Attributes.href (Routing.toPath location) ]
+        [ Html.text (Routing.toName location) ]
+    ]
+
+
 view : Signal.Address Action -> Model -> Html
 view address model =
-  Language.view (Signal.forwardTo address LanguageAction) model.languages
+  let
+    content =
+      case model.location of
+        Nothing ->
+          Html.p [] [ Html.text "Not Found" ]
+
+        Just (Routing.Languages) ->
+          Language.view (Signal.forwardTo address LanguageAction) model.languages
+  in
+    Html.div
+      []
+      [ model |> toString |> Html.text
+      , Html.nav
+          []
+          [ Html.h2 [] [ Html.text "Navigation" ]
+          , Html.ul
+              []
+              (List.map navItem [ Routing.Languages ])
+          ]
+      , Html.div
+          []
+          [ Html.h2 [] [ Html.text "Content" ]
+          , content
+          ]
+      ]

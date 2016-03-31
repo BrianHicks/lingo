@@ -6,10 +6,11 @@ import StartApp
 import Task
 import Lingo
 
+
 app : StartApp.App Lingo.Model
 app =
   StartApp.start
-    { init = (Lingo.init, Effects.none)
+    { init = ( Lingo.init, Effects.none )
     , update = Lingo.update
     , view = Lingo.view
     , inits = []

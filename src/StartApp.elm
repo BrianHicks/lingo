@@ -1,14 +1,4 @@
-module StartApp ( start, Config, App ) where
-
-{- BIG HONKING NOTE:
-
-This is a modified version from
-https://github.com/seanhess/start-app/blob/master/src/StartApp.elm with some
-modifications to allow initial states for signals. Once
-https://github.com/evancz/start-app/pull/37 is merged (or the fork is published
-as a separate package) we should use that instead.
-
--}
+module StartApp (start, Config, App) where
 
 {-| This module helps you start your application in a typical Elm workflow.
 It assumes you are following [the Elm Architecture][arch] and using
@@ -22,6 +12,16 @@ works!**
 
 # Start your Application
 @docs start, Config, App
+
+-}
+
+{- BIG HONKING NOTE:
+
+This is a modified version from
+https://github.com/seanhess/start-app/blob/master/src/StartApp.elm with some
+modifications to allow initial states for signals. Once
+https://github.com/evancz/start-app/pull/37 is merged (or the fork is published
+as a separate package) we should use that instead.
 
 -}
 
@@ -49,12 +49,12 @@ will be applied when the application loads.
 
 -}
 type alias Config model action =
-    { init : (model, Effects action)
-    , update : action -> model -> (model, Effects action)
-    , view : Signal.Address action -> model -> Html
-    , inputs : List (Signal.Signal action)
-    , inits : List (Signal.Signal action)
-    }
+  { init : ( model, Effects action )
+  , update : action -> model -> ( model, Effects action )
+  , view : Signal.Address action -> model -> Html
+  , inputs : List (Signal.Signal action)
+  , inits : List (Signal.Signal action)
+  }
 
 
 {-| An `App` is made up of a couple signals:
@@ -71,10 +71,10 @@ type alias Config model action =
     be hooked up to a `port` to ensure they get run.
 -}
 type alias App model =
-    { html : Signal Html
-    , model : Signal model
-    , tasks : Signal (Task.Task Never ())
-    }
+  { html : Signal Html
+  , model : Signal model
+  , tasks : Signal (Task.Task Never ())
+  }
 
 
 {-| Start an application. It requires a bit of wiring once you have created an
@@ -95,47 +95,49 @@ tasks into a `port` that will run them all.
 -}
 start : Config model action -> App model
 start config =
-    let
-        singleton action = [ action ]
+  let
+    singleton action =
+      [ action ]
 
-        -- messages : Signal.Mailbox (List action)
-        messages =
-            Signal.mailbox []
+    -- messages : Signal.Mailbox (List action)
+    messages =
+      Signal.mailbox []
 
-        -- address : Signal.Address action
-        address =
-            Signal.forwardTo messages.address singleton
+    -- address : Signal.Address action
+    address =
+      Signal.forwardTo messages.address singleton
 
-        -- updateStep : (Bool, action) -> (model, Effects action) -> (model, Effects action)
-        updateStep (_, action) (oldModel, accumulatedEffects) =
-            let
-                (newModel, additionalEffects) = config.update action oldModel
-            in
-                (newModel, Effects.batch [accumulatedEffects, additionalEffects])
+    -- updateStep : (Bool, action) -> (model, Effects action) -> (model, Effects action)
+    updateStep ( _, action ) ( oldModel, accumulatedEffects ) =
+      let
+        ( newModel, additionalEffects ) =
+          config.update action oldModel
+      in
+        ( newModel, Effects.batch [ accumulatedEffects, additionalEffects ] )
 
-        -- update : List (Bool, action) -> (model, Effects action) -> (model, Effects action)
-        update actions (model, _) =
-            List.foldl updateStep (model, Effects.none) actions
+    -- update : List (Bool, action) -> (model, Effects action) -> (model, Effects action)
+    update actions ( model, _ ) =
+      List.foldl updateStep ( model, Effects.none ) actions
 
-        -- updateStart : List (Bool, action) -> (model, Effects action)
-        updateStart actions =
-            List.foldl updateStep config.init (List.filter fst actions)
+    -- updateStart : List (Bool, action) -> (model, Effects action)
+    updateStart actions =
+      List.foldl updateStep config.init (List.filter fst actions)
 
-        -- inputs : Signal (List (Bool, action))
-        inputs =
-          List.foldl
-            (Signal.Extra.fairMerge List.append)
-            (Signal.map (List.map ((,) False)) messages.signal)
-            (List.map (Signal.map (singleton << (,) False)) config.inputs ++ List.map (Signal.map (singleton << (,) True)) config.inits)
+    -- inputs : Signal (List (Bool, action))
+    inputs =
+      List.foldl
+        (Signal.Extra.fairMerge List.append)
+        (Signal.map (List.map ((,) False)) messages.signal)
+        (List.map (Signal.map (singleton << (,) False)) config.inputs ++ List.map (Signal.map (singleton << (,) True)) config.inits)
 
-        -- effectsAndModel : Signal (model, Effects action)
-        effectsAndModel =
-            foldp' update updateStart inputs
+    -- effectsAndModel : Signal (model, Effects action)
+    effectsAndModel =
+      foldp' update updateStart inputs
 
-        model =
-            Signal.map fst effectsAndModel
-    in
-        { html = Signal.map (config.view address) model
-        , model = model
-        , tasks = Signal.map (Effects.toTask messages.address << snd) effectsAndModel
-        }
+    model =
+      Signal.map fst effectsAndModel
+  in
+    { html = Signal.map (config.view address) model
+    , model = model
+    , tasks = Signal.map (Effects.toTask messages.address << snd) effectsAndModel
+    }

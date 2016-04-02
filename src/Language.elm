@@ -13,8 +13,8 @@ import Word
 
 type alias Model =
   { name : String
-  , sources : List Source.Model
-  , archivedSources : List Source.Model
+  , sources : Dict String Source.Model
+  , archivedSources : Dict String Source.Model
   , words : Dict String Word.Model
   }
 
@@ -22,8 +22,8 @@ type alias Model =
 init : String -> Model
 init name =
   { name = name
-  , sources = []
-  , archivedSources = []
+  , sources = Dict.empty
+  , archivedSources = Dict.empty
   , words = Dict.empty
   }
 
@@ -33,7 +33,7 @@ init name =
 
 
 type Action
-  = TODO
+  = SourceAction Source.Action
 
 
 
@@ -51,4 +51,36 @@ update action model =
 
 view : Signal.Address Action -> Model -> Html
 view address model =
-  Html.text model.name
+  let
+    sourceSummary =
+      Source.summaryView (Signal.forwardTo address SourceAction)
+
+    sources =
+      model.sources
+        |> Dict.toList
+        |> List.map sourceSummary
+
+    sourceCount =
+      model.sources |> Dict.size |> toString
+
+    archivedCount =
+      model.archivedSources |> Dict.size |> toString
+  in
+    Html.div
+      []
+      [ Html.h1 [] [ Html.text model.name ]
+      , Html.h2 [] [ Html.text "Sources" ]
+      , Html.p [] [ Html.text (sourceCount ++ " sources (" ++ archivedCount ++ " archived)") ]
+      , Html.ul [] sources
+      ]
+
+
+-- UTILITY
+
+addSource : Source.Model -> Model -> Model
+addSource source model =
+  { model | sources = Dict.insert (Source.slug source) source model.sources}
+
+sourceBySlug : Model -> String -> Maybe Source.Model
+sourceBySlug model source =
+  Dict.get source model.sources

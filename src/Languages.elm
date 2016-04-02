@@ -1,5 +1,6 @@
 module Languages (..) where
 
+import Dict exposing (Dict)
 import Effects exposing (Effects)
 import Html exposing (Html)
 import Html.Attributes as Attributes
@@ -16,7 +17,15 @@ type alias Model =
 
 init : Model
 init =
-  [ (Language.init "Spanish") ]
+  let
+    sampleText =
+      { title = "This is a 'Test'"
+      , text = "Lorem ipsum dolor sit amet pro consecorum del taco."
+      , source = Just "https://blah.com/whatever"
+      }
+    spanish = Language.init "Spanish" |> Language.addSource sampleText
+  in
+    [ spanish ]
 
 
 

@@ -6,6 +6,7 @@ import Html.Attributes as Attributes
 import Language
 import Languages
 import Routing
+import Source
 
 
 -- MODEL
@@ -32,6 +33,7 @@ type Action
   = RoutingAction Routing.Action
   | LanguagesAction Languages.Action
   | LanguageAction String Language.Action
+  | SourceAction String String Source.Action
 
 
 
@@ -70,6 +72,29 @@ update action model =
           in
             ( { model | languages = languages }, Effects.map (LanguageAction name) fx )
 
+    SourceAction language slug action ->
+      case Languages.byName model.languages slug of
+        Nothing ->
+          ( model, Effects.none )
+
+        Just target ->
+          case Language.sourceBySlug target slug of
+            Nothing ->
+              ( model, Effects.none )
+
+            Just sourceTarget ->
+              let
+                ( source, fx ) =
+                  Source.update action sourceTarget
+
+                updated =
+                  Language.addSource source target
+
+                languages =
+                  Languages.updateIn model.languages updated
+              in
+                ( { model | languages = languages }, Effects.map (SourceAction language slug) fx )
+
 
 
 -- VIEW
@@ -106,6 +131,19 @@ view address model =
 
             Just language ->
               Language.view (Signal.forwardTo address (LanguageAction language.name)) language
+
+        Just (Routing.Source language name) ->
+          case Languages.byName model.languages language of
+            Nothing ->
+              notFound
+
+            Just target ->
+              case Language.sourceBySlug target name of
+                Nothing ->
+                  notFound
+
+                Just source ->
+                  Source.view (Signal.forwardTo address (SourceAction language name)) source
   in
     Html.div
       []

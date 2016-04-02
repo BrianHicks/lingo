@@ -23,7 +23,9 @@ init =
       , text = "Lorem ipsum dolor sit amet pro consecorum del taco."
       , source = Just "https://blah.com/whatever"
       }
-    spanish = Language.init "Spanish" |> Language.addSource sampleText
+
+    spanish =
+      Language.init "Spanish" |> Language.addSource sampleText
   in
     [ spanish ]
 

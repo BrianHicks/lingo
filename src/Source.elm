@@ -1,10 +1,11 @@
 module Source (..) where
 
+import Html.Attributes as Attributes
 import Effects exposing (Effects)
 import Html exposing (Html)
+import Regex
 import Signal
 import String
-import Regex
 
 
 -- MODEL
@@ -26,15 +27,36 @@ type Action
 
 
 
+-- UPDATE
+
+
+update : Action -> Model -> ( Model, Effects Action )
+update action model =
+  ( model, Effects.none )
+
+
+
 -- VIEW
 
 
-summaryView : Signal.Address Action -> (String, Model) -> Html
-summaryView address (slug, model) =
+summaryView : Signal.Address Action -> ( String, Model ) -> Html
+summaryView address ( href, model ) =
   Html.li
     []
-    [ Html.h3 [] [ Html.text (model.title ++ " (" ++ slug ++ ")") ]
+    [ Html.a
+        [ Attributes.href href ]
+        [ Html.h3 [] [ Html.text model.title ]
+        ]
     , Html.p [] [ Html.text (String.left 100 model.text) ]
+    ]
+
+
+view : Signal.Address Action -> Model -> Html
+view address model =
+  Html.div
+    []
+    [ Html.h1 [] [ Html.text model.title ]
+    , Html.p [] [ Html.text model.text ]
     ]
 
 

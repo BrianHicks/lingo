@@ -3,6 +3,7 @@ module Language (..) where
 import Dict exposing (Dict)
 import Effects exposing (Effects)
 import Html exposing (Html)
+import Routing
 import Signal
 import Source
 import Word
@@ -48,17 +49,14 @@ update action model =
 
 -- VIEW
 
-
 view : Signal.Address Action -> Model -> Html
 view address model =
   let
-    sourceSummary =
-      Source.summaryView (Signal.forwardTo address SourceAction)
-
     sources =
       model.sources
         |> Dict.toList
-        |> List.map sourceSummary
+        |> List.map (\(slug, source) -> (Routing.toPath (Routing.Source model.name slug), source))
+        |> List.map (Source.summaryView (Signal.forwardTo address SourceAction))
 
     sourceCount =
       model.sources |> Dict.size |> toString
@@ -75,11 +73,14 @@ view address model =
       ]
 
 
+
 -- UTILITY
+
 
 addSource : Source.Model -> Model -> Model
 addSource source model =
-  { model | sources = Dict.insert (Source.slug source) source model.sources}
+  { model | sources = Dict.insert (Source.slug source) source model.sources }
+
 
 sourceBySlug : Model -> String -> Maybe Source.Model
 sourceBySlug model source =

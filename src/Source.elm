@@ -1,9 +1,10 @@
 module Source (..) where
 
-import Html.Attributes as Attributes
 import Effects exposing (Effects)
 import Html exposing (Html)
+import Html.Attributes as Attributes
 import Regex
+import Routing
 import Signal
 import String
 
@@ -33,6 +34,15 @@ type Action
 update : Action -> Model -> ( Model, Effects Action )
 update action model =
   ( model, Effects.none )
+
+
+
+-- ROUTER
+
+
+route : Routing.Model -> Signal.Address Action -> Model -> Html
+route _ address model =
+  view address model
 
 
 

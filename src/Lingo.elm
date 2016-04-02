@@ -20,7 +20,7 @@ type alias Model =
 
 init : Model
 init =
-  { location = Just Routing.Languages
+  { location = Routing.init
   , languages = Languages.init
   }
 
@@ -32,8 +32,6 @@ init =
 type Action
   = RoutingAction Routing.Action
   | LanguagesAction Languages.Action
-  | LanguageAction String Language.Action
-  | SourceAction String String Source.Action
 
 
 
@@ -57,93 +55,34 @@ update action model =
       in
         ( { model | languages = languages }, Effects.map LanguagesAction fx )
 
-    LanguageAction name action ->
-      case Languages.byName model.languages name of
-        Nothing ->
-          ( model, Effects.none )
-
-        Just target ->
-          let
-            ( language, fx ) =
-              Language.update action target
-
-            languages =
-              Languages.updateIn model.languages language
-          in
-            ( { model | languages = languages }, Effects.map (LanguageAction name) fx )
-
-    SourceAction language slug action ->
-      case Languages.byName model.languages slug of
-        Nothing ->
-          ( model, Effects.none )
-
-        Just target ->
-          case Language.sourceBySlug target slug of
-            Nothing ->
-              ( model, Effects.none )
-
-            Just sourceTarget ->
-              let
-                ( source, fx ) =
-                  Source.update action sourceTarget
-
-                updated =
-                  Language.addSource source target
-
-                languages =
-                  Languages.updateIn model.languages updated
-              in
-                ( { model | languages = languages }, Effects.map (SourceAction language slug) fx )
-
 
 
 -- VIEW
 
 
-navItem : Routing.Location -> Html
-navItem location =
+navItem : String -> String -> Html
+navItem caption location =
   Html.li
     []
     [ Html.a
-        [ Attributes.href (Routing.toPath location) ]
-        [ Html.text (Routing.toName location) ]
+        [ Attributes.href location ]
+        [ Html.text caption ]
     ]
 
 
 view : Signal.Address Action -> Model -> Html
 view address model =
   let
-    notFound =
-      Html.p [] [ Html.text "Not Found" ]
-
     content =
       case model.location of
-        Nothing ->
-          notFound
+        [] ->
+          Html.p [] [ Html.text "Hello! Navigate!" ]
 
-        Just (Routing.Languages) ->
-          Languages.view (Signal.forwardTo address LanguagesAction) model.languages
+        "languages" :: rest ->
+          Languages.route rest (Signal.forwardTo address LanguagesAction) model.languages
 
-        Just (Routing.Language name) ->
-          case Languages.byName model.languages name of
-            Nothing ->
-              notFound
-
-            Just language ->
-              Language.view (Signal.forwardTo address (LanguageAction language.name)) language
-
-        Just (Routing.Source language name) ->
-          case Languages.byName model.languages language of
-            Nothing ->
-              notFound
-
-            Just target ->
-              case Language.sourceBySlug target name of
-                Nothing ->
-                  notFound
-
-                Just source ->
-                  Source.view (Signal.forwardTo address (SourceAction language name)) source
+        _ ->
+          Routing.notFound
   in
     Html.div
       []
@@ -153,7 +92,7 @@ view address model =
           [ Html.h2 [] [ Html.text "Navigation" ]
           , Html.ul
               []
-              (List.map navItem [ Routing.Languages ])
+              (List.map (\( caption, url ) -> navItem caption url) [ ( "Languages", "TODO" ) ])
           ]
       , Html.div
           []

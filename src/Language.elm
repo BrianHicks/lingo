@@ -34,7 +34,7 @@ init name =
 
 
 type Action
-  = SourceAction Source.Action
+  = SourceAction String Source.Action
 
 
 
@@ -43,11 +43,47 @@ type Action
 
 update : Action -> Model -> ( Model, Effects Action )
 update action model =
-  ( model, Effects.none )
+  case action of
+    SourceAction slug action ->
+      case sourceBySlug slug model of
+        Nothing ->
+          ( model, Effects.none )
+
+        Just target ->
+          let
+            ( source, fx ) =
+              Source.update action target
+          in
+            ( model |> addSource source
+            , Effects.map (SourceAction slug) fx
+            )
+
+
+
+-- ROUTER
+
+
+route : Routing.Model -> Signal.Address Action -> Model -> Html
+route path address model =
+  case path of
+    [] ->
+      view address model
+
+    "sources" :: slug :: rest ->
+      case sourceBySlug slug model of
+        Nothing ->
+          Routing.notFound
+
+        Just source ->
+          Source.route rest (Signal.forwardTo address (SourceAction slug)) source
+
+    _ ->
+      Routing.notFound
 
 
 
 -- VIEW
+
 
 view : Signal.Address Action -> Model -> Html
 view address model =
@@ -55,8 +91,12 @@ view address model =
     sources =
       model.sources
         |> Dict.toList
-        |> List.map (\(slug, source) -> (Routing.toPath (Routing.Source model.name slug), source))
-        |> List.map (Source.summaryView (Signal.forwardTo address SourceAction))
+        |> List.map
+            (\( slug, source ) ->
+              Source.summaryView
+                (Signal.forwardTo address (SourceAction slug))
+                ( "TODO", source )
+            )
 
     sourceCount =
       model.sources |> Dict.size |> toString
@@ -82,6 +122,6 @@ addSource source model =
   { model | sources = Dict.insert (Source.slug source) source model.sources }
 
 
-sourceBySlug : Model -> String -> Maybe Source.Model
-sourceBySlug model source =
-  Dict.get source model.sources
+sourceBySlug : String -> Model -> Maybe Source.Model
+sourceBySlug slug model =
+  Dict.get slug model.sources

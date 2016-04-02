@@ -36,6 +36,7 @@ init =
 
 type Action
   = AddLanguage String
+  | LanguageAction String Language.Action
 
 
 
@@ -48,6 +49,39 @@ update action model =
     AddLanguage name ->
       ( (Language.init name) :: model, Effects.none )
 
+    LanguageAction name action ->
+      case byName model name of
+        Nothing ->
+          ( model, Effects.none )
+
+        Just target ->
+          let
+            ( language, fx ) =
+              Language.update action target
+          in
+            ( model |> updateIn language
+            , Effects.map (LanguageAction name) fx
+            )
+
+
+
+-- ROUTER
+
+
+route : Routing.Model -> Signal.Address Action -> Model -> Html
+route path address model =
+  case path of
+    [] ->
+      view address model
+
+    name :: rest ->
+      case byName model name of
+        Nothing ->
+          Routing.notFound
+
+        Just language ->
+          Language.route rest (Signal.forwardTo address (LanguageAction name)) language
+
 
 
 -- VIEW
@@ -58,8 +92,8 @@ languageView address language =
   Html.li
     []
     [ Html.a
-        [ Attributes.href (Routing.toPath (Routing.Language language.name)) ]
-        [ Html.text (Routing.toName (Routing.Language language.name)) ]
+        [ Attributes.href "TODO" ]
+        [ Html.text language.name ]
     ]
 
 
@@ -79,8 +113,8 @@ byName model language =
     |> List.head
 
 
-updateIn : Model -> Language.Model -> Model
-updateIn model language =
+updateIn : Language.Model -> Model -> Model
+updateIn language model =
   List.map
     (\candidate ->
       if candidate.name == language.name then

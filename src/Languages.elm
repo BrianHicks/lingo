@@ -70,36 +70,36 @@ update action model =
 
 route : Routing.Model -> Signal.Address Action -> Model -> Html
 route path address model =
-  case path of
+  case path.below of
     [] ->
-      view address model
+      view path address model
 
-    name :: rest ->
+    name :: _ ->
       case byName model name of
         Nothing ->
           Routing.notFound
 
         Just language ->
-          Language.route rest (Signal.forwardTo address (LanguageAction name)) language
+          Language.route (Routing.pop path) (Signal.forwardTo address (LanguageAction name)) language
 
 
 
 -- VIEW
 
 
-languageView : Signal.Address Action -> Language.Model -> Html
-languageView address language =
+languageView : Routing.Model -> Signal.Address Action -> Language.Model -> Html
+languageView path address language =
   Html.li
     []
     [ Html.a
-        [ Attributes.href "TODO" ]
+        [ Attributes.href (Routing.below language.name path) ]
         [ Html.text language.name ]
     ]
 
 
-view : Signal.Address Action -> Model -> Html
-view address model =
-  Html.ul [] (List.map (languageView address) model)
+view : Routing.Model -> Signal.Address Action -> Model -> Html
+view path address model =
+  Html.ul [] (List.map (\m -> languageView path address m) model)
 
 
 

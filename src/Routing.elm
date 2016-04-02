@@ -10,7 +10,13 @@ import String
 
 
 type alias Model =
-  List String
+  { below :
+      List String
+      -- components to be navigated
+  , above :
+      List String
+      -- components already navigated
+  }
 
 
 type alias View a b =
@@ -18,7 +24,9 @@ type alias View a b =
 
 
 init : Model
-init = []
+init =
+  { below = [], above = [] }
+
 
 
 -- ACTION
@@ -36,7 +44,11 @@ update : Action -> Model -> ( Model, Effects Action )
 update action model =
   case action of
     PathChange path ->
-      ( sanitize path, Effects.none )
+      ( { below = sanitize path
+        , above = []
+        }
+      , Effects.none
+      )
 
 
 
@@ -52,13 +64,37 @@ notFound =
 -- UTILITY
 
 
-sanitize : String -> Model
+sanitize : String -> List String
 sanitize path =
   path
     |> String.split "/"
     |> List.filter (\seg -> seg /= "" && seg /= "#")
 
 
-serialize : Model -> String
+serialize : List String -> String
 serialize path =
-  path |> String.join "/" |> String.append "#/"
+  path
+    |> String.join "/"
+    |> String.append "#/"
+
+
+popN : Int -> Model -> Model
+popN number model =
+  { below = List.drop number model.below
+  , above = model.above ++ List.take number model.below
+  }
+
+
+pop : Model -> Model
+pop =
+  popN 1
+
+
+here : Model -> String
+here model =
+  serialize model.above
+
+
+below : String -> Model -> String
+below location model =
+  serialize (model.above ++ [ location ])

@@ -65,17 +65,17 @@ update action model =
 
 route : Routing.Model -> Signal.Address Action -> Model -> Html
 route path address model =
-  case path of
+  case path.below of
     [] ->
-      view address model
+      view path address model
 
-    "sources" :: slug :: rest ->
+    "sources" :: slug :: _ ->
       case sourceBySlug slug model of
         Nothing ->
           Routing.notFound
 
         Just source ->
-          Source.route rest (Signal.forwardTo address (SourceAction slug)) source
+          Source.route (Routing.popN 2 path) (Signal.forwardTo address (SourceAction slug)) source
 
     _ ->
       Routing.notFound
@@ -85,8 +85,8 @@ route path address model =
 -- VIEW
 
 
-view : Signal.Address Action -> Model -> Html
-view address model =
+view : Routing.Model -> Signal.Address Action -> Model -> Html
+view path address model =
   let
     sources =
       model.sources
@@ -95,7 +95,7 @@ view address model =
             (\( slug, source ) ->
               Source.summaryView
                 (Signal.forwardTo address (SourceAction slug))
-                ( "TODO", source )
+                ( Routing.below ("sources/" ++ slug) path, source )
             )
 
     sourceCount =

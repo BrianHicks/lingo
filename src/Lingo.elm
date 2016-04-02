@@ -60,6 +60,10 @@ update action model =
 -- VIEW
 
 
+languagesPath =
+  "languages"
+
+
 navItem : String -> String -> Html
 navItem caption location =
   Html.li
@@ -74,15 +78,12 @@ view : Signal.Address Action -> Model -> Html
 view address model =
   let
     content =
-      case model.location of
+      case model.location.below of
         [] ->
           Html.p [] [ Html.text "Hello! Navigate!" ]
 
-        "languages" :: rest ->
-          Languages.route rest (Signal.forwardTo address LanguagesAction) model.languages
-
-        _ ->
-          Routing.notFound
+        languagesPath :: _ ->
+          Languages.route (Routing.pop model.location) (Signal.forwardTo address LanguagesAction) model.languages
   in
     Html.div
       []
@@ -92,7 +93,7 @@ view address model =
           [ Html.h2 [] [ Html.text "Navigation" ]
           , Html.ul
               []
-              (List.map (\( caption, url ) -> navItem caption url) [ ( "Languages", "TODO" ) ])
+              (List.map (\( caption, url ) -> navItem caption url) [ ( "Languages", (Routing.below languagesPath model.location) ) ])
           ]
       , Html.div
           []

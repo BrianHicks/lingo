@@ -54,11 +54,26 @@
     padding: 1px;
     border-bottom: 2px solid black;
 }
+.source p > a:hover {
+    text-decoration: none;
+}
 
 /* colors from https://www.google.com/design/spec/style/color.html#color-color-palette, 500 strength */
-.source a.unknown { border-color: #607D8B; } /* blue grey */
-.source a.new { border-color: #F44336; } /* red */
-.source a.seenbefore { border-color: #FF9800; } /* orange */
-.source a.almostknown { border-color: #FFEB3B; } /* yellow */
-.source a.wellknown { border-color: #4CAF50; } /* green */
-.source a.ignored { border-color: #EEE; border-style: dotted; } /* grey, 200 weight */
+
+.source p > a.unknown { border-color: #607D8B; } /* blue grey */
+.source p > a.unknown:hover { background-color: #ECEFF1; }
+
+.source p > a.new { border-color: #F44336; } /* red */
+.source p > a.new:hover { background-color: #FFEBEE; }
+
+.source p > a.seenbefore { border-color: #FF9800; } /* orange */
+.source p > a.seenbefore:hover { background-color: #FFF3E0; }
+
+.source p > a.almostknown { border-color: #FFEB3B; } /* yellow */
+.source p > a.almostknown:hover { background-color: #FFFDE7; }
+
+.source p > a.wellknown { border-color: #4CAF50; } /* green */
+.source p > a.wellknown:hover { background-color: #E8F5E9; }
+
+.source p > a.ignored { border-color: #EEE; border-bottom-style: dotted; } /* grey, 200 weight */
+.source p > a.ignored:hover { background-color: #FAFAFA; }

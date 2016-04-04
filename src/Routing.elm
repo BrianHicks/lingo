@@ -1,7 +1,9 @@
 module Routing (..) where
 
+import Dict exposing (Dict)
 import Effects exposing (Effects)
 import Html exposing (Html)
+import Regex
 import Signal
 import String
 
@@ -16,6 +18,8 @@ type alias Model =
   , above :
       List String
       -- components already navigated
+  , query :
+      Dict String String
   }
 
 
@@ -25,7 +29,7 @@ type alias View a b =
 
 init : Model
 init =
-  { below = [], above = [] }
+  { below = [], above = [], query = Dict.empty }
 
 
 
@@ -43,12 +47,31 @@ type Action
 update : Action -> Model -> ( Model, Effects Action )
 update action model =
   case action of
-    PathChange path ->
-      ( { below = sanitize path
-        , above = []
-        }
-      , Effects.none
-      )
+    PathChange raw ->
+      let
+        new =
+          case Regex.split (Regex.AtMost 1) (Regex.regex "\\?") raw of
+            path::query::[] ->
+              { model
+                | query = parseQuery query
+                , below = sanitize path
+                , above = []
+              }
+
+            path::[] ->
+              { model
+                | below = sanitize path
+                , above = []
+                , query = Dict.empty
+              }
+
+            _ ->
+              model
+
+        fx =
+          Effects.none
+      in
+        ( new, fx )
 
 
 
@@ -71,17 +94,39 @@ sanitize path =
     |> List.filter (\seg -> seg /= "" && seg /= "#")
 
 
-serialize : List String -> String
-serialize path =
-  path
+serialize : Model -> String
+serialize model =
+  model.above
     |> String.join "/"
     |> String.append "#/"
 
 
+-- yes, I know that query strings can have duplicate keys. I'll implement it if
+-- I need it.
+parseQuery : String -> Dict String String
+parseQuery raw =
+  let
+    keyValuer =
+      \kv ->
+        case String.split "=" kv of
+          k::v::[] ->
+            (k, v)
+          k::[] ->
+            (k, "")
+          _ ->
+            (kv, "")
+  in
+   raw
+    |> String.split "&"
+    |> List.map keyValuer
+    |> Dict.fromList
+
+
 popN : Int -> Model -> Model
 popN number model =
-  { below = List.drop number model.below
-  , above = model.above ++ List.take number model.below
+  { model
+    | below = List.drop number model.below
+    , above = model.above ++ List.take number model.below
   }
 
 
@@ -92,9 +137,9 @@ pop =
 
 here : Model -> String
 here model =
-  serialize model.above
+  serialize model
 
 
 below : String -> Model -> String
 below location model =
-  serialize (model.above ++ [ location ])
+  serialize { model | above = model.above ++ [ location ]}

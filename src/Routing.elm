@@ -51,14 +51,14 @@ update action model =
       let
         new =
           case Regex.split (Regex.AtMost 1) (Regex.regex "\\?") raw of
-            path::query::[] ->
+            path :: query :: [] ->
               { model
                 | query = parseQuery query
                 , below = sanitize path
                 , above = []
               }
 
-            path::[] ->
+            path :: [] ->
               { model
                 | below = sanitize path
                 , above = []
@@ -96,30 +96,48 @@ sanitize path =
 
 serialize : Model -> String
 serialize model =
-  model.above
-    |> String.join "/"
-    |> String.append "#/"
+  let
+    path =
+      model.above
+        |> String.join "/"
+        |> String.append "#/"
+
+    query =
+      model.query
+        |> Dict.toList
+        |> List.map (\( k, v ) -> k ++ "=" ++ v)
+        |> String.join "&"
+  in
+    if query == "" then
+      path
+    else
+      path ++ "?" ++ query
+
 
 
 -- yes, I know that query strings can have duplicate keys. I'll implement it if
 -- I need it.
+
+
 parseQuery : String -> Dict String String
 parseQuery raw =
   let
     keyValuer =
       \kv ->
         case String.split "=" kv of
-          k::v::[] ->
-            (k, v)
-          k::[] ->
-            (k, "")
+          k :: v :: [] ->
+            ( k, v )
+
+          k :: [] ->
+            ( k, "" )
+
           _ ->
-            (kv, "")
+            ( kv, "" )
   in
-   raw
-    |> String.split "&"
-    |> List.map keyValuer
-    |> Dict.fromList
+    raw
+      |> String.split "&"
+      |> List.map keyValuer
+      |> Dict.fromList
 
 
 popN : Int -> Model -> Model
@@ -142,4 +160,4 @@ here model =
 
 below : String -> Model -> String
 below location model =
-  serialize { model | above = model.above ++ [ location ]}
+  serialize { model | above = model.above ++ [ location ] }

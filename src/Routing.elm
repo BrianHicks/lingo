@@ -161,3 +161,8 @@ here model =
 below : String -> Model -> String
 below location model =
   serialize { model | above = model.above ++ [ location ] }
+
+
+withQuery : String -> String -> Model -> String
+withQuery key value model =
+  serialize { model | query = Dict.insert key value model.query }

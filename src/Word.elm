@@ -1,5 +1,8 @@
 module Word (..) where
 
+import String
+
+
 -- MODEL
 
 
@@ -29,3 +32,12 @@ init word =
   , example = Nothing
   , exported = False
   }
+
+
+
+-- UTILITY
+
+
+levelClass : Level -> String
+levelClass =
+  toString >> String.toLower

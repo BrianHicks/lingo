@@ -75,7 +75,7 @@ route path address model =
           Routing.notFound
 
         Just source ->
-          Source.route (Routing.popN 2 path) (Signal.forwardTo address (SourceAction slug)) source
+          Source.route (Routing.popN 2 path) (Signal.forwardTo address (SourceAction slug)) model.words source
 
     _ ->
       Routing.notFound

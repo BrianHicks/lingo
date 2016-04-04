@@ -1,5 +1,6 @@
 module Source (..) where
 
+import Dict exposing (Dict)
 import Effects exposing (Effects)
 import Html exposing (Html)
 import Html.Attributes as Attributes
@@ -7,6 +8,8 @@ import Regex
 import Routing
 import Signal
 import String
+import Word
+import Utilities
 
 
 -- MODEL
@@ -40,9 +43,9 @@ update action model =
 -- ROUTER
 
 
-route : Routing.Model -> Signal.Address Action -> Model -> Html
-route _ address model =
-  view address model
+route : Routing.Model -> Signal.Address Action -> Dict String Word.Model -> Model -> Html
+route route address words model =
+  view route address words model
 
 
 
@@ -61,13 +64,53 @@ summaryView address ( href, model ) =
     ]
 
 
-view : Signal.Address Action -> Model -> Html
-view address model =
+activateWords : Routing.Model -> Dict String Word.Model -> String -> List Html
+activateWords route savedWords text =
+  let
+    activator =
+      \word ->
+        let
+          class =
+            case Dict.get word savedWords of
+              Nothing ->
+                Word.levelClass Word.Unknown
+
+              Just saved ->
+                Word.levelClass saved.level
+
+          href =
+            Routing.withQuery "word" word route
+        in
+          Html.a
+            [ Attributes.href href
+            , Attributes.class class
+            ]
+            [ Html.text word ]
+
+    words =
+      text
+        |> Regex.find Regex.All wordsRe
+        |> List.map .match
+        |> List.map activator
+
+    nonwords =
+      text
+        |> Regex.split Regex.All wordsRe
+        |> List.map Html.text
+  in
+    Utilities.longestZip nonwords words
+
+
+view : Routing.Model -> Signal.Address Action -> Dict String Word.Model -> Model -> Html
+view route address words model =
   Html.div
     []
-    [ Html.h1 [] [ Html.text model.title ]
-    , Html.p [] [ Html.text (model |> wordsInContext |> toString) ]
-    ]
+    ([ Html.h1 [] [ Html.text model.title ] ]
+      ++ (model.text
+            |> String.split "\n\n"
+            |> List.map (\paragraph -> Html.p [] (activateWords route words paragraph))
+         )
+    )
 
 
 
@@ -82,26 +125,6 @@ slug model =
     |> Regex.replace Regex.All (Regex.regex "\\s+") (\_ -> "-")
 
 
-wordsInContext : Model -> List ( String, String )
-wordsInContext model =
-  let
-    begins =
-      "[¡¿]?"
-
-    word =
-      "[a-zA-ZÀ-ÖØ-öø-ȳ]+"
-
-    words =
-      "(" ++ word ++ "\\s?)+"
-
-    ends =
-      "[\\.!\\?:;]"
-  in
-    model.text
-      |> Regex.find Regex.All (Regex.regex (begins ++ words ++ ends))
-      |> List.concatMap
-          (\sentence ->
-            sentence.match
-              |> Regex.find Regex.All (Regex.regex word)
-              |> List.map (\word -> ( word.match, sentence.match ))
-          )
+wordsRe : Regex.Regex
+wordsRe =
+  Regex.regex "[a-zA-ZÀ-ÖØ-öø-ȳ]+"

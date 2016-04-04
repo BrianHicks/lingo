@@ -5,15 +5,13 @@
 /** NAV **/
 
 #nav {
-    position: fixed;
-    left: 0;
-    top: 0;
-    height: 100%;
+    min-height: 100%;
     width: 200px;
     background-color: #263238;
     color: #ECEFF1;
     text-align: center;
     border-right: 1px solid #ECEFF1;
+    float: left;
 }
 
 #nav h1 {
@@ -34,14 +32,17 @@
 }
 
 #content {
-    margin-left: 225px;
+    margin-left: 200px;
 }
 
-/** WORDS **/
+/** SOURCES **/
 
 .source {
     line-height: 1.8em;
     font-size: 1.1em;
+    float: left;
+    width: 80%;
+    padding-left: 15px;
 }
 
 .source-link {
@@ -77,3 +78,29 @@
 
 .source p > a.ignored { border-color: #EEE; border-bottom-style: dotted; } /* grey, 200 weight */
 .source p > a.ignored:hover { background-color: #FAFAFA; }
+
+/* WORDS */
+
+.word {
+    float: left;
+    height: 100%;
+    width: 15%;
+    background-color: #ECEFF1;
+    color: #263238;
+    text-align: center;
+}
+
+.word .level:before {
+    content: "Level: ";
+    font-weight: bold;
+}
+
+.word .meaning:before {
+    content: "Meaning: ";
+    font-weight: bold;
+}
+
+.word .example:before {
+    content: "Example: ";
+    font-weight: bold;
+}

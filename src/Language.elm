@@ -3,6 +3,7 @@ module Language (..) where
 import Dict exposing (Dict)
 import Effects exposing (Effects)
 import Html exposing (Html)
+import Html.Attributes as Attributes
 import Routing
 import Signal
 import Source
@@ -35,6 +36,7 @@ init name =
 
 type Action
   = SourceAction String Source.Action
+  | WordAction String Word.Action
 
 
 
@@ -58,6 +60,21 @@ update action model =
             , Effects.map (SourceAction slug) fx
             )
 
+    WordAction raw action ->
+      let
+        word =
+          case Dict.get raw model.words of
+            Nothing ->
+              Word.init raw
+            Just saved ->
+              saved
+
+        ( word', fx ) =
+          Word.update action word
+      in
+        ( model |> addWord word', Effects.map (WordAction raw) fx )
+
+
 
 
 -- ROUTER
@@ -70,12 +87,37 @@ route path address model =
       view path address model
 
     "sources" :: slug :: _ ->
-      case sourceBySlug slug model of
-        Nothing ->
-          Routing.notFound
+      let
+        sourceContent =
+          case sourceBySlug slug model of
+            Nothing ->
+              Routing.notFound
 
-        Just source ->
-          Source.route (Routing.popN 2 path) (Signal.forwardTo address (SourceAction slug)) model.words source
+            Just source ->
+              Source.route (Routing.popN 2 path) (Signal.forwardTo address (SourceAction slug)) model.words source
+
+        word =
+          case Dict.get "word" path.query of
+            Nothing ->
+              Nothing
+
+            Just selected ->
+              case Dict.get selected model.words of
+                Nothing ->
+                  Just (Word.init selected)
+
+                Just saved ->
+                  Just saved
+
+        wordContent =
+          case word of
+            Nothing ->
+              Html.div [ Attributes.class "empty" ] [ ]
+            Just selected ->
+              Word.route (Routing.popN 2 path) (Signal.forwardTo address (WordAction slug)) selected
+
+      in
+        Html.div [] [ wordContent, sourceContent ]
 
     _ ->
       Routing.notFound
@@ -120,6 +162,11 @@ view path address model =
 addSource : Source.Model -> Model -> Model
 addSource source model =
   { model | sources = Dict.insert (Source.slug source) source model.sources }
+
+
+addWord : Word.Model -> Model -> Model
+addWord word model =
+  { model | words = Dict.insert word.word word model.words }
 
 
 sourceBySlug : String -> Model -> Maybe Source.Model

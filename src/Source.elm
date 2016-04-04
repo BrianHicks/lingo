@@ -73,7 +73,7 @@ activateWords route savedWords text =
           class =
             case Dict.get word savedWords of
               Nothing ->
-                Word.levelClass Word.Unknown
+                Word.levelClass Word.defaultLevel
 
               Just saved ->
                 Word.levelClass saved.level

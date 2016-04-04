@@ -15,6 +15,10 @@ type Level
   | Ignored
 
 
+defaultLevel : Level
+defaultLevel = Unknown
+
+
 type alias Model =
   { word : String
   , level : Level
@@ -27,7 +31,7 @@ type alias Model =
 init : String -> Model
 init word =
   { word = word
-  , level = Unknown
+  , level = defaultLevel
   , meaning = Nothing
   , example = Nothing
   , exported = False

@@ -103,14 +103,22 @@ activateWords route savedWords text =
 
 view : Routing.Model -> Signal.Address Action -> Dict String Word.Model -> Model -> Html
 view route address words model =
-  Html.div
-    [ Attributes.class "source" ]
-    ([ Html.h1 [] [ Html.text model.title ] ]
-      ++ (model.text
-            |> String.split "\n\n"
-            |> List.map (\paragraph -> Html.p [] (activateWords route words paragraph))
-         )
-    )
+  let
+    link =
+      case model.source of
+        Nothing -> Html.text ""
+        Just url -> Html.a [ Attributes.href url, Attributes.class "source-link" ] [ Html.text "(source)" ]
+  in
+    Html.div
+      [ Attributes.class "source" ]
+      ([ Html.h1
+           []
+           [ Html.text model.title, link ] ]
+        ++ (model.text
+              |> String.split "\n\n"
+              |> List.map (\paragraph -> Html.p [] (activateWords route words paragraph))
+           )
+      )
 
 
 

@@ -44,7 +44,12 @@
     font-size: 1.1em;
 }
 
-.source a {
+.source-link {
+    font-size: 0.5em;
+    color: #CCC;
+}
+
+.source p > a {
     color: inherit;
     padding: 1px;
     border-bottom: 2px solid black;

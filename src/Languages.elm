@@ -19,9 +19,9 @@ init : Model
 init =
   let
     sampleText =
-      { title = "This is a 'Test'"
-      , text = "Lorem ipsum dolor sit amet pro consecorum del taco."
-      , source = Just "https://blah.com/whatever"
+      { title = "Potencial de acción"
+      , text = "Un potencial de acción, también llamado impulso eléctrico, es una onda de descarga eléctrica que viaja a lo largo de la membrana celular modificando su distribución de carga eléctrica. Los potenciales de acción se utilizan en el cuerpo para llevar información entre unos tejidos y otros, lo que hace que sean una característica microscópica esencial para la vida. Pueden generarse por diversos tipos de células corporales, pero las más activas en su uso son las células del sistema nervioso para enviar mensajes entre células nerviosas (sinapsis) o desde células nerviosas a otros tejidos corporales, como el músculo o las glándulas.\n\nMuchas plantas también generan potenciales de acción que viajan a través del floema para coordinar su actividad. La principal diferencia entre los potenciales de acción de animales y plantas es que las plantas utilizan flujos de potasio y calcio mientras que los animales utilizan potasio y sodio.\n\nLos potenciales de acción son la vía fundamental de transmisión de códigos neurales. Sus propiedades pueden frenar el tamaño de cuerpos en desarrollo y permitir el control y coordinación centralizados de órganos y tejidos."
+      , source = Just "https://es.wikipedia.org/wiki/Potencial_de_acci%C3%B3n"
       }
 
     spanish =

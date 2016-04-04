@@ -106,14 +106,18 @@ view route address words model =
   let
     link =
       case model.source of
-        Nothing -> Html.text ""
-        Just url -> Html.a [ Attributes.href url, Attributes.class "source-link" ] [ Html.text "(source)" ]
+        Nothing ->
+          Html.text ""
+
+        Just url ->
+          Html.a [ Attributes.href url, Attributes.class "source-link" ] [ Html.text "(source)" ]
   in
     Html.div
       [ Attributes.class "source" ]
       ([ Html.h1
-           []
-           [ Html.text model.title, link ] ]
+          []
+          [ Html.text model.title, link ]
+       ]
         ++ (model.text
               |> String.split "\n\n"
               |> List.map (\paragraph -> Html.p [] (activateWords route words paragraph))

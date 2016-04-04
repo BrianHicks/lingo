@@ -66,6 +66,7 @@ update action model =
           case Dict.get raw model.words of
             Nothing ->
               Word.init raw
+
             Just saved ->
               saved
 
@@ -73,7 +74,6 @@ update action model =
           Word.update action word
       in
         ( model |> addWord word', Effects.map (WordAction raw) fx )
-
 
 
 
@@ -112,10 +112,10 @@ route path address model =
         wordContent =
           case word of
             Nothing ->
-              Html.div [ Attributes.class "empty" ] [ ]
+              Html.div [ Attributes.class "empty" ] []
+
             Just selected ->
               Word.route (Routing.popN 2 path) (Signal.forwardTo address (WordAction slug)) selected
-
       in
         Html.div [] [ wordContent, sourceContent ]
 

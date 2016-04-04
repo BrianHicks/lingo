@@ -1,0 +1,59 @@
+#container {
+    min-height: 100%;
+}
+
+/** NAV **/
+
+#nav {
+    position: fixed;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 200px;
+    background-color: #263238;
+    color: #ECEFF1;
+    text-align: center;
+    border-right: 1px solid #ECEFF1;
+}
+
+#nav h1 {
+    font-size: 2em;
+    background-color: #37474F;
+    padding-top: 25px;
+    padding-bottom: 25px;
+    margin: 0;
+}
+
+#nav a {
+    color: #ECEFF1;
+}
+
+#nav ul {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+#content {
+    margin-left: 225px;
+}
+
+/** WORDS **/
+
+.source {
+    line-height: 1.8em;
+    font-size: 1.1em;
+}
+
+.source a {
+    color: inherit;
+    padding: 1px;
+    border-bottom: 2px solid black;
+}
+
+/* colors from https://www.google.com/design/spec/style/color.html#color-color-palette, 500 strength */
+.source a.unknown { border-color: #607D8B; } /* blue grey */
+.source a.new { border-color: #F44336; } /* red */
+.source a.seenbefore { border-color: #FF9800; } /* orange */
+.source a.almostknown { border-color: #FFEB3B; } /* yellow */
+.source a.wellknown { border-color: #4CAF50; } /* green */
+.source a.ignored { border-color: #EEE; border-style: dotted; } /* grey, 200 weight */

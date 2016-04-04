@@ -86,16 +86,16 @@ view address model =
           Languages.route (Routing.pop model.location) (Signal.forwardTo address LanguagesAction) model.languages
   in
     Html.div
-      []
-      [ model |> toString |> Html.text
+      [ Attributes.id "container" ]
+      [ Html.node "link" [ Attributes.href "../style.css", Attributes.rel "stylesheet" ] []
       , Html.nav
-          []
-          [ Html.h2 [] [ Html.text "Navigation" ]
+          [ Attributes.id "nav" ]
+          [ Html.h1 [] [ Html.text "Lingo" ]
           , Html.ul
               []
               [ Html.li
                   []
-                  [ Html.h3
+                  [ Html.h2
                       []
                       [ Html.a
                           [ Attributes.href (model.location |> Routing.below languagesPath |> Routing.serialize) ]
@@ -108,8 +108,6 @@ view address model =
               ]
           ]
       , Html.div
-          []
-          [ Html.h2 [] [ Html.text "Content" ]
-          , content
-          ]
+          [ Attributes.id "content" ]
+          [ content ]
       ]

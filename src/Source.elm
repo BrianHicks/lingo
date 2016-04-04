@@ -104,7 +104,7 @@ activateWords route savedWords text =
 view : Routing.Model -> Signal.Address Action -> Dict String Word.Model -> Model -> Html
 view route address words model =
   Html.div
-    []
+    [ Attributes.class "source" ]
     ([ Html.h1 [] [ Html.text model.title ] ]
       ++ (model.text
             |> String.split "\n\n"

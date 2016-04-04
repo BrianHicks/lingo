@@ -79,7 +79,7 @@ activateWords route savedWords text =
                 Word.levelClass saved.level
 
           href =
-            Routing.withQuery "word" word route
+            Routing.withQuery "word" word route |> Routing.serialize
         in
           Html.a
             [ Attributes.href href

@@ -93,7 +93,19 @@ view address model =
           [ Html.h2 [] [ Html.text "Navigation" ]
           , Html.ul
               []
-              (List.map (\( caption, url ) -> navItem caption url) [ ( "Languages", (Routing.below languagesPath model.location) ) ])
+              [ Html.li
+                  []
+                  [ Html.h3
+                      []
+                      [ Html.a
+                          [ Attributes.href (model.location |> Routing.below languagesPath |> Routing.serialize) ]
+                          [ Html.text "Languages " ]
+                      ]
+                  , Html.ul
+                      []
+                      (List.map (Languages.nav (model.location |> Routing.below languagesPath) (Signal.forwardTo address LanguagesAction)) model.languages)
+                  ]
+              ]
           ]
       , Html.div
           []

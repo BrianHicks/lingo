@@ -153,16 +153,11 @@ pop =
   popN 1
 
 
-here : Model -> String
-here model =
-  serialize model
-
-
-below : String -> Model -> String
+below : String -> Model -> Model
 below location model =
-  serialize { model | above = model.above ++ [ location ] }
+  { model | above = model.above ++ [ location ] }
 
 
-withQuery : String -> String -> Model -> String
+withQuery : String -> String -> Model -> Model
 withQuery key value model =
-  serialize { model | query = Dict.insert key value model.query }
+  { model | query = Dict.insert key value model.query }

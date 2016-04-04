@@ -95,7 +95,7 @@ view path address model =
             (\( slug, source ) ->
               Source.summaryView
                 (Signal.forwardTo address (SourceAction slug))
-                ( Routing.below ("sources/" ++ slug) path, source )
+                ( path |> Routing.below ("sources/" ++ slug) |> Routing.serialize, source )
             )
 
     sourceCount =

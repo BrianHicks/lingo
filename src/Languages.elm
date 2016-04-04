@@ -87,19 +87,19 @@ route path address model =
 -- VIEW
 
 
-languageView : Routing.Model -> Signal.Address Action -> Language.Model -> Html
-languageView path address language =
+nav : Routing.Model -> Signal.Address Action -> Language.Model -> Html
+nav path address language =
   Html.li
     []
     [ Html.a
-        [ Attributes.href (Routing.below language.name path) ]
+        [ Attributes.href (path |> Routing.below language.name |> Routing.serialize) ]
         [ Html.text language.name ]
     ]
 
 
 view : Routing.Model -> Signal.Address Action -> Model -> Html
 view path address model =
-  Html.ul [] (List.map (\m -> languageView path address m) model)
+  Html.ul [] (List.map (nav path address) model)
 
 
 

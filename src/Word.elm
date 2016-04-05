@@ -83,14 +83,16 @@ levelSelector : Signal.Address Action -> Level -> Model -> Html
 levelSelector address level model =
   let
     class =
-      if model.level == level
-      then (levelClass level) ++ " active"
-      else levelClass level
+      if model.level == level then
+        (levelClass level) ++ " active"
+      else
+        levelClass level
   in
     H.button'
-     { class = class
-     , update = { onClick = Signal.message address (SetLevel level) }}
-     [ Html.text (levelName level) ]
+      { class = class
+      , update = { onClick = Signal.message address (SetLevel level) }
+      }
+      [ Html.text (levelName level) ]
 
 
 view : Signal.Address Action -> Model -> Html
@@ -105,7 +107,8 @@ view address model =
         , levelSelector address SeenBefore model
         , levelSelector address AlmostKnown model
         , levelSelector address WellKnown model
-        , levelSelector address Ignored model ]
+        , levelSelector address Ignored model
+        ]
     , H.p' { class = "meaning" } [ Html.text (toString model.meaning) ]
     , H.p' { class = "example" } [ Html.text (toString model.example) ]
     ]
@@ -119,10 +122,17 @@ levelClass : Level -> String
 levelClass =
   toString >> String.toLower
 
+
 levelName : Level -> String
 levelName =
   toString
     >> String.toList
-    >> List.concatMap (\c -> if Char.isUpper c then [' ', c] else [c])
+    >> List.concatMap
+        (\c ->
+          if Char.isUpper c then
+            [ ' ', c ]
+          else
+            [ c ]
+        )
     >> String.fromList
     >> String.trim

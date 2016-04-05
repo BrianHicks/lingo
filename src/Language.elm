@@ -62,19 +62,19 @@ update action model =
             )
 
     WordAction raw action ->
-     let
-       word =
-         case Dict.get raw model.words of
-           Nothing ->
-             Word.init raw
+      let
+        word =
+          case Dict.get raw model.words of
+            Nothing ->
+              Word.init raw
 
-           Just saved ->
-             saved
+            Just saved ->
+              saved
 
-       ( word', fx ) =
-         Word.update action word
-     in
-       ( model |> addWord word', Effects.map (WordAction raw) fx )
+        ( word', fx ) =
+          Word.update action word
+      in
+        ( model |> addWord word', Effects.map (WordAction raw) fx )
 
 
 

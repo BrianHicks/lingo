@@ -37,7 +37,7 @@ init name =
 
 type Action
   = SourceAction String Source.Action
-  | WordAction (Maybe Word.Model) Word.Action
+  | WordAction String Word.Action
 
 
 
@@ -61,24 +61,20 @@ update action model =
             , Effects.map (SourceAction slug) fx
             )
 
-    WordAction maybeWord action ->
-      case maybeWord of
-        Nothing ->
-          ( model, Effects.none )
-        Just raw ->
-          let
-            word =
-              case Dict.get raw.word model.words of
-                Nothing ->
-                  raw
+    WordAction raw action ->
+     let
+       word =
+         case Dict.get raw model.words of
+           Nothing ->
+             Word.init raw
 
-                Just saved ->
-                  saved
+           Just saved ->
+             saved
 
-            ( word', fx ) =
-              Word.update action word
-          in
-            ( model |> addWord word', Effects.map (WordAction (Just raw)) fx )
+       ( word', fx ) =
+         Word.update action word
+     in
+       ( model |> addWord word', Effects.map (WordAction raw) fx )
 
 
 
@@ -121,7 +117,7 @@ route path address model =
               H.div' { class = "empty" } []
 
             Just selected ->
-              Word.route (Routing.popN 2 path) (Signal.forwardTo address (WordAction word)) selected
+              Word.route (Routing.popN 2 path) (Signal.forwardTo address (WordAction selected.word)) selected
       in
         H.section_ "source-and-word" [ model |> toString |> Html.text, sourceContent, wordContent ]
 

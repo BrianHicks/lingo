@@ -119,7 +119,7 @@ route path address model =
             Just selected ->
               Word.route (Routing.popN 2 path) (Signal.forwardTo address (WordAction slug)) selected
       in
-        H.section_ "source-and-word" [ wordContent, sourceContent ]
+        H.section_ "source-and-word" [ sourceContent, wordContent ]
 
     _ ->
       Routing.notFound

@@ -1,0 +1,4 @@
+div.content {
+    @include span-columns(10 of 12);
+    height: 100%;
+}

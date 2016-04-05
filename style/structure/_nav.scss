@@ -1,0 +1,4 @@
+nav.nav {
+    @include span-columns(2 of 12);
+    height: 100%;
+}

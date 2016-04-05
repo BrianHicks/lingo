@@ -1,0 +1,4 @@
+section.word {
+    @include span-columns(2 of 10);
+    height: 100%;
+}

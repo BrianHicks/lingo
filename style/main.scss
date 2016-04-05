@@ -1,106 +1,22 @@
-#container {
-    min-height: 100%;
-}
+@import "vars";
+@import "reset";
+@import "bourbon/bourbon";
+@import "neat/neat";
 
-/** NAV **/
-
-#nav {
-    min-height: 100%;
-    width: 200px;
-    background-color: #263238;
-    color: #ECEFF1;
-    text-align: center;
-    border-right: 1px solid #ECEFF1;
-    float: left;
-}
-
-#nav h1 {
-    font-size: 2em;
-    background-color: #37474F;
-    padding-top: 25px;
-    padding-bottom: 25px;
-    margin: 0;
-}
-
-#nav a {
-    color: #ECEFF1;
-}
-
-#nav ul {
-    padding-left: 0;
-    list-style-type: none;
-}
-
-#content {
-    margin-left: 200px;
-}
-
-/** SOURCES **/
-
-.source {
-    line-height: 1.8em;
-    font-size: 1.1em;
-    float: left;
-    width: 80%;
-    padding-left: 15px;
-}
-
-.source-link {
-    font-size: 0.5em;
-    color: #CCC;
-}
-
-.source p > a {
-    color: inherit;
-    padding: 1px;
-    border-bottom: 2px solid black;
-}
-.source p > a:hover {
-    text-decoration: none;
-}
-
-/* colors from https://www.google.com/design/spec/style/color.html#color-color-palette, 500 strength */
-
-.source p > a.unknown { border-color: #607D8B; } /* blue grey */
-.source p > a.unknown:hover { background-color: #ECEFF1; }
-
-.source p > a.new { border-color: #F44336; } /* red */
-.source p > a.new:hover { background-color: #FFEBEE; }
-
-.source p > a.seenbefore { border-color: #FF9800; } /* orange */
-.source p > a.seenbefore:hover { background-color: #FFF3E0; }
-
-.source p > a.almostknown { border-color: #FFEB3B; } /* yellow */
-.source p > a.almostknown:hover { background-color: #FFFDE7; }
-
-.source p > a.wellknown { border-color: #4CAF50; } /* green */
-.source p > a.wellknown:hover { background-color: #E8F5E9; }
-
-.source p > a.ignored { border-color: #EEE; border-bottom-style: dotted; } /* grey, 200 weight */
-.source p > a.ignored:hover { background-color: #FAFAFA; }
-
-/* WORDS */
-
-.word {
-    float: left;
+/* Containment */
+html, body, #main, #container, #content {
     height: 100%;
-    width: 15%;
-    background-color: #ECEFF1;
-    color: #263238;
-    text-align: center;
 }
 
-.word .level:before {
-    content: "Level: ";
-    font-weight: bold;
-}
+/* Structure */
+@import "structure/container";
+@import "structure/nav";
+@import "structure/content";
+@import "structure/source-and-word";
+@import "structure/source";
+@import "structure/word";
 
-.word .meaning:before {
-    content: "Meaning: ";
-    font-weight: bold;
-}
-
-.word .example:before {
-    content: "Example: ";
-    font-weight: bold;
-}
+/* Style */
+@import "styles/nav";
+@import "styles/word";
+@import "styles/source";

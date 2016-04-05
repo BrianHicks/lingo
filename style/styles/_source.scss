@@ -1,0 +1,36 @@
+section.source {
+    line-height: 1.8em;
+    font-size: 1.1em;
+
+    .source-link {
+        margin-left: 10px;
+        font-size: 0.75em;
+        color: $unknown;
+    }
+
+    p > a {
+        color: inherit;
+        padding: 1px;
+        border-bottom: 2px solid black;
+
+        /* &:hover { text-decoration: none; } */
+
+        &.unknown { border-color: $unknown }
+        &.unknown:hover { background-color: $unknown-bg; }
+
+        &.new { border-color: $new }
+        &.new:hover { background-color: $new-bg; }
+
+        &.seenbefore { border-color: $seenbefore }
+        &.seenbefore:hover { background-color: $seenbefore-bg; }
+
+        &.almostknown { border-color: $almostknown }
+        &.almostknown:hover { background-color: $almostknown-bg; }
+
+        &.wellknown { border-color: $wellknown }
+        &.wellknown:hover { background-color: $wellknown-bg; }
+
+        &.ignored { border-color: $ignored }
+        &.ignored:hover { background-color: $ignored-bg; }
+    }
+}

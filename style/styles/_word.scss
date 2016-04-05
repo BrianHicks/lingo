@@ -1,0 +1,9 @@
+section.word {
+    background-color: #ECEFF1;
+    color: #263238;
+    text-align: center;
+
+    .level:before { content: "Level: "; font-weight: bold; }
+    .meaning:before { content: "Meaning: "; font-weight: bold; }
+    .example:before { content: "Example: "; font-weight: bold; }
+}

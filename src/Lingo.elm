@@ -2,7 +2,6 @@ module Lingo (..) where
 
 import Effects exposing (Effects)
 import Html exposing (Html)
-import Html.Attributes as Attributes
 import Html.Shorthand as H
 import Language
 import Languages
@@ -83,8 +82,7 @@ view address model =
   in
     H.div'
       { class = "container" }
-      [ Html.node "link" [ Attributes.href "../style.css", Attributes.rel "stylesheet" ] []
-      , H.nav'
+      [ H.nav'
           { class = "nav" }
           [ H.h1_ "Lingo"
           , H.ul_

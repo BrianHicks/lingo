@@ -1,0 +1,25 @@
+{
+  "name": "lingo",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/Main.elm",
+  "dependencies": {
+    "elm-webpack-loader": "^2.0.1",
+    "file-loader": "^0.8.5",
+    "webpack": "^1.12.14"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BrianHicks/lingo.git"
+  },
+  "author": "Brian Hicks",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/BrianHicks/lingo/issues"
+  },
+  "homepage": "https://github.com/BrianHicks/lingo#readme"
+}

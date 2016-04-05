@@ -3,9 +3,9 @@ module Languages (..) where
 import Dict exposing (Dict)
 import Effects exposing (Effects)
 import Html exposing (Html)
-import Html.Attributes as Attributes
-import Routing
+import Html.Shorthand as H
 import Language
+import Routing
 
 
 -- MODEL
@@ -89,17 +89,16 @@ route path address model =
 
 nav : Routing.Model -> Signal.Address Action -> Language.Model -> Html
 nav path address language =
-  Html.li
-    []
-    [ Html.a
-        [ Attributes.href (path |> Routing.below language.name |> Routing.serialize) ]
-        [ Html.text language.name ]
+  H.li_
+    [ H.a_
+        (path |> Routing.below language.name |> Routing.serialize)
+        language.name
     ]
 
 
 view : Routing.Model -> Signal.Address Action -> Model -> Html
 view path address model =
-  Html.ul [] (List.map (nav path address) model)
+  H.ul_ (List.map (nav path address) model)
 
 
 

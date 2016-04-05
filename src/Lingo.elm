@@ -3,6 +3,7 @@ module Lingo (..) where
 import Effects exposing (Effects)
 import Html exposing (Html)
 import Html.Attributes as Attributes
+import Html.Shorthand as H
 import Language
 import Languages
 import Routing
@@ -66,12 +67,7 @@ languagesPath =
 
 navItem : String -> String -> Html
 navItem caption location =
-  Html.li
-    []
-    [ Html.a
-        [ Attributes.href location ]
-        [ Html.text caption ]
-    ]
+  H.li_ [ H.a_ location caption ]
 
 
 view : Signal.Address Action -> Model -> Html
@@ -80,34 +76,28 @@ view address model =
     content =
       case model.location.below of
         [] ->
-          Html.p [] [ Html.text "Hello! Navigate!" ]
+          H.p_ [ Html.text "Hello! Navigate!" ]
 
         languagesPath :: _ ->
           Languages.route (Routing.pop model.location) (Signal.forwardTo address LanguagesAction) model.languages
   in
-    Html.div
-      [ Attributes.id "container" ]
+    H.div'
+      { class = "container" }
       [ Html.node "link" [ Attributes.href "../style.css", Attributes.rel "stylesheet" ] []
-      , Html.nav
-          [ Attributes.id "nav" ]
-          [ Html.h1 [] [ Html.text "Lingo" ]
-          , Html.ul
-              []
-              [ Html.li
-                  []
+      , H.nav'
+          { class = "nav" }
+          [ H.h1_ "Lingo"
+          , H.ul_
+              [ H.li_
                   [ Html.h2
                       []
-                      [ Html.a
-                          [ Attributes.href (model.location |> Routing.below languagesPath |> Routing.serialize) ]
-                          [ Html.text "Languages " ]
-                      ]
-                  , Html.ul
-                      []
+                      [ H.a_ (model.location |> Routing.below languagesPath |> Routing.serialize) "Languages" ]
+                  , H.ul_
                       (List.map (Languages.nav (model.location |> Routing.below languagesPath) (Signal.forwardTo address LanguagesAction)) model.languages)
                   ]
               ]
           ]
-      , Html.div
-          [ Attributes.id "content" ]
+      , H.div'
+          { class = "content" }
           [ content ]
       ]

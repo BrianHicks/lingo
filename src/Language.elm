@@ -3,10 +3,11 @@ module Language (..) where
 import Dict exposing (Dict)
 import Effects exposing (Effects)
 import Html exposing (Html)
-import Html.Attributes as Attributes
+import Html.Shorthand as H
 import Routing
 import Signal
 import Source
+import String
 import Word
 
 
@@ -111,13 +112,14 @@ route path address model =
 
         wordContent =
           case word of
+            -- TODO: this feels like it controls too much about the empty word content
             Nothing ->
-              Html.div [ Attributes.class "empty" ] []
+              H.div' { class = "empty" } []
 
             Just selected ->
               Word.route (Routing.popN 2 path) (Signal.forwardTo address (WordAction slug)) selected
       in
-        Html.div [] [ wordContent, sourceContent ]
+        H.section_ "source-and-word" [ wordContent, sourceContent ]
 
     _ ->
       Routing.notFound
@@ -146,12 +148,17 @@ view path address model =
     archivedCount =
       model.archivedSources |> Dict.size |> toString
   in
-    Html.div
-      []
-      [ Html.h1 [] [ Html.text model.name ]
-      , Html.h2 [] [ Html.text "Sources" ]
-      , Html.p [] [ Html.text (sourceCount ++ " sources (" ++ archivedCount ++ " archived)") ]
-      , Html.ul [] sources
+    H.section'
+      { class = "language"
+      , id = "language-" ++ (String.toLower model.name)
+      }
+      [ H.h1_ model.name
+      , H.section_
+          "sources"
+          [ H.h2_ "Sources"
+          , H.p_ [ Html.text (sourceCount ++ "sources (" ++ archivedCount ++ " archived)") ]
+          , H.ul_ sources
+          ]
       ]
 
 

@@ -3,13 +3,13 @@ module Source (..) where
 import Dict exposing (Dict)
 import Effects exposing (Effects)
 import Html exposing (Html)
-import Html.Attributes as Attributes
+import Html.Shorthand as H
 import Regex
 import Routing
 import Signal
 import String
-import Word
 import Utilities
+import Word
 
 
 -- MODEL
@@ -54,13 +54,9 @@ route route address words model =
 
 summaryView : Signal.Address Action -> ( String, Model ) -> Html
 summaryView address ( href, model ) =
-  Html.li
-    []
-    [ Html.a
-        [ Attributes.href href ]
-        [ Html.h3 [] [ Html.text model.title ]
-        ]
-    , Html.p [] [ Html.text (String.left 100 model.text) ]
+  H.li_
+    [ Html.h2 [] [ H.a_ href model.title ]
+    , H.p_ [ Html.text (String.left 100 model.text) ]
     ]
 
 
@@ -81,10 +77,10 @@ activateWords route savedWords text =
           href =
             Routing.withQuery "word" word route |> Routing.serialize
         in
-          Html.a
-            [ Attributes.href href
-            , Attributes.class class
-            ]
+          H.a'
+            { class = class
+            , href = href
+            }
             [ Html.text word ]
 
     words =
@@ -110,17 +106,18 @@ view route address words model =
           Html.text ""
 
         Just url ->
-          Html.a [ Attributes.href url, Attributes.class "source-link" ] [ Html.text "(source)" ]
+          H.a' { class = "source-link", href = url } [ Html.text "(source)" ]
   in
-    Html.div
-      [ Attributes.class "source" ]
+    H.section'
+      { class = "source", id = "source-" ++ (slug model) }
       ([ Html.h1
           []
           [ Html.text model.title, link ]
        ]
         ++ (model.text
               |> String.split "\n\n"
-              |> List.map (\paragraph -> Html.p [] (activateWords route words paragraph))
+              |> List.map (activateWords route words)
+              |> List.map H.p_
            )
       )
 

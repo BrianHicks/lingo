@@ -102,13 +102,7 @@ view address model =
     [ H.h2_ model.word
     , H.p'
         { class = "level" }
-        [ Html.text (levelName model.level)
-        , levelSelector address New model
-        , levelSelector address SeenBefore model
-        , levelSelector address AlmostKnown model
-        , levelSelector address WellKnown model
-        , levelSelector address Ignored model
-        ]
+        (List.map (\l -> levelSelector address l model) [ New, SeenBefore, AlmostKnown, WellKnown, Ignored ])
     , H.p' { class = "meaning" } [ Html.text (toString model.meaning) ]
     , H.p' { class = "example" } [ Html.text (toString model.example) ]
     ]

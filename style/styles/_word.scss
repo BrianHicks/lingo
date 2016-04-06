@@ -3,7 +3,33 @@ section.word {
     color: #263238;
     text-align: center;
 
-    .level:before { content: "Level: "; font-weight: bold; }
     .meaning:before { content: "Meaning: "; font-weight: bold; }
     .example:before { content: "Example: "; font-weight: bold; }
+
+    .level {
+        &:before {
+            content: "Level";
+            font-weight: bold;
+            display: block;
+        }
+
+        button {
+            display: block;
+            width: 80%;
+            margin: 10px auto;
+            padding: 5px;
+            border-radius: 5px;
+            border: 1px solid black;
+            font-size: 1em;
+            background-color: #F8F8F8;
+        }
+
+        button.new { border-color: $new; color: $new; background-color: $new-bg; }
+        button.seenbefore { border-color: $seenbefore; color: $seenbefore; background-color: $seenbefore-bg; }
+        button.almostknown { border-color: $almostknown; color: $almostknown; background-color: $almostknown-bg; }
+        button.wellknown { border-color: $wellknown; color: $wellknown; background-color: $wellknown-bg; }
+        button.ignored { border-color: $ignored; color: #888; background-color: $ignored-bg; }
+
+        button.active { font-weight: bold; background-color: #FFF; }
+    }
 }
